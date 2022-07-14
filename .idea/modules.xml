@@ -2,7 +2,15 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/.idea/Soji-DNN - PreRelease.iml" filepath="$PROJECT_DIR$/.idea/Soji-DNN - PreRelease.iml" />
+=======
+<<<<<<< HEAD
+      <module fileurl="file://$PROJECT_DIR$/.idea/Soji-DNN - PreRelease.iml" filepath="$PROJECT_DIR$/.idea/Soji-DNN - PreRelease.iml" />
+=======
+      <module fileurl="file://$PROJECT_DIR$/.idea/ocv_cam_infer.iml" filepath="$PROJECT_DIR$/.idea/ocv_cam_infer.iml" />
+>>>>>>> a020a1c8c5f54e882e01ad686294ad665b7e5ed2
+>>>>>>> d006ece42a526101066120b73ff6b889c11b4436
     </modules>
   </component>
 </project>
