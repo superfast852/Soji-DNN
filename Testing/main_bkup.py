@@ -1,26 +1,15 @@
 import torch  # For Model
 import cv2  # For Cam
 import time  # Inference measuring
-import local_utils.Label_xtr as Label_xtr # Custom Label Extractor TODO: Develop Extractor functions
+import Label_xtr  # Custom Label Extractor TODO: Develop Extractor functions
 
 # Parameter Wall TODO: Add argparse
 debug = False  # Enable Function Outputs
-<<<<<<< HEAD
-one = False
-model_type = "v7_custom"  # Select from: v5s, v5m, v5n, v7, v7t, v5_custom, v7_custom
-v5_custom_path = "C:/Users/GG/Desktop/Code/ML/Models/v5s_70/weights/best.pt"  # Path to a YOLOv5 model trained on a custom dataset
-v7_custom_path = "C:/Users/GG/Desktop/Code/ML/Models/v7t_p5hyps_aqua/yolov7.pt"  # Path to a YOLOv7 model trained on a custom dataset
-custom_yaml = "C:/Users/GG/Desktop/Code/ML/Datasets/AquaTrash-yolov5/data.yaml"  # Path to the custom dataset's data.yaml file
-src = "C:/Users/GG/PycharmProjects/testvid.mp4"
-min_conf = 0.5
-=======
 one = True
-model_type = "v5s"  # Select from: v5s, v5m, v5n, v7, v7t, v5_custom, v7_custom
-v5_custom_path = "C:/Users/GG/Desktop/Code/ML/Models/v5s_70/weights/best.pt"  # Path to a YOLOv5 model trained on a custom dataset
-v7_custom_path = ""  # Path to a YOLOv7 model trained on a custom dataset
-custom_yaml = ""  # Path to the custom dataset's data.yaml file
+model_type = "v5s"  # v5s, v5m, v5n, v7, v7t, v5_custom, v7_custom
+v5_custom_path = "C:/Users/GG/Desktop/Code/ML/Models/v5s_70/weights/best.pt"
+v7_custom_path = ""
 
->>>>>>> 8dafaf59706717f66b90412367ada413ad4d7551
 avg_fps = []
 
 
@@ -94,22 +83,22 @@ def frame_debug(frame):
 if __name__ == "__main__":
     try:
         if model_type == 'v5m':
-            model = torch.hub.load("ultralytics/yolov5", 'custom', "prebuilts/yolov5m.pt", verbose=debug)
+            model = torch.hub.load("ultralytics/yolov5", "yolov5m", verbose=debug)
 
         elif model_type == 'v5s':
-            model = torch.hub.load("ultralytics/yolov5", 'custom', "prebuilts/yolov5s.pt", verbose=debug)
+            model = torch.hub.load("ultralytics/yolov5", "yolov5s", verbose=debug)
 
         elif model_type == 'v5n':
-            model = torch.hub.load("ultralytics/yolov5", 'custom', "prebuilts/yolov5n.pt", verbose=debug)
+            model = torch.hub.load("ultralytics/yolov5", "yolov5n", verbose=debug)
 
         elif model_type == "v5_custom":
             model = torch.hub.load('ultralytics/yolov5', 'custom', v5_custom_path, verbose=debug)  # YoloV7 Tiny Model
 
         elif model_type == 'v7':
-            model = torch.hub.load('C:/Users/GG/Desktop/Code/ML/yolov7', 'custom', "prebuilts/yolov7.pt", source='local', verbose=debug)  # YoloV7 Tiny Model
+            model = torch.hub.load('C:/Users/GG/Desktop/Code/ML/yolov7', 'custom', "yolov7.pt", source='local', verbose=debug)  # YoloV7 Tiny Model
 
         elif model_type == 'v7t':
-            model = torch.hub.load('C:/Users/GG/Desktop/Code/ML/yolov7', 'custom', "prebuilts/yolov7t.pt", source='local', verbose=debug)  # YoloV7 Tiny Model
+            model = torch.hub.load('C:/Users/GG/Desktop/Code/ML/yolov7', 'custom', "yolov7t.pt", source='local', verbose=debug)  # YoloV7 Tiny Model
 
         elif model_type == "v7_custom":
             model = torch.hub.load('C:/Users/GG/Desktop/Code/ML/yolov7', 'custom', v7_custom_path, source='local', verbose=debug)  # YoloV7 Tiny Model
@@ -118,13 +107,14 @@ if __name__ == "__main__":
         if not model_type.endswith("custom"):
             classes = Label_xtr.getLabelsFromTxt(path="coco-lbl.txt", verbose=debug)  # Coco Labels Extract
         else:
-            classes = Label_xtr.getLabelsFromYaml(custom_yaml, verbose=debug)  # AquaTrash Labels
-            #classes = Label_xtr.getLabelsFromYaml(custom_yaml, verbose=debug)  # Trash-Filter Labels
+            classes = Label_xtr.getLabelsFromYaml("C:/Users/GG/Desktop/Code/ML/Datasets/AquaTrash-yolov5/data.yaml", verbose=debug)  # AquaTrash Labels
+            #classes = Label_xtr.getLabelsFromYaml("C:/Users/GG/Desktop/Code/ML/Datasets/Trash-Filter-YOLOV5/DATASET/data.yaml", verbose=debug)  # Trash-Filter Labels
             #classes = ['-', 'cardboard', 'glass', 'metal', 'plastic'] #Manual Labels
 
         # Open Webcam
-        vid = cv2.VideoCapture(src)
-        while vid.isOpened():
+        vid = cv2.VideoCapture(0)
+        vid.open(0)
+        while True:
             start_time = time.time()
             ret, frame = vid.read()  # read webcam image info
             detections = infer(frame, model, debug=debug)  # goto infer function atop
@@ -132,9 +122,7 @@ if __name__ == "__main__":
             confs = []
             for i in range(len(detections)):
                 # Show Webcam Image with Detection Info
-                if not one:
-                    if detections[i][4] >= min_conf:
-                        draw(detections, frame, classes, debug=debug)
+                if not one: draw(detections, frame, classes, debug=debug)
                 confs.append(detections[i][4])
 
             if confs:
