@@ -5,7 +5,6 @@ import local_utils.Label_xtr as Label_xtr # Custom Label Extractor TODO: Develop
 
 # Parameter Wall TODO: Add argparse
 debug = False  # Enable Function Outputs
-<<<<<<< HEAD
 one = False
 model_type = "v7_custom"  # Select from: v5s, v5m, v5n, v7, v7t, v5_custom, v7_custom
 v5_custom_path = "C:/Users/GG/Desktop/Code/ML/Models/v5s_70/weights/best.pt"  # Path to a YOLOv5 model trained on a custom dataset
@@ -13,24 +12,6 @@ v7_custom_path = "prebuilts/custom/v7t_p5hyps_aqua/V1-416-86%/yolov7.pt"  # Path
 custom_yaml = "prebuilts/custom/v7t_p5hyps_aqua/data.yaml"  # Path to the custom dataset's data.yaml file
 src = "Testing/testvid.mp4"
 min_conf = 0.5
-=======
-<<<<<<< HEAD
-one = False
-model_type = "v7_custom"  # Select from: v5s, v5m, v5n, v7, v7t, v5_custom, v7_custom
-v5_custom_path = "C:/Users/GG/Desktop/Code/ML/Models/v5s_70/weights/best.pt"  # Path to a YOLOv5 model trained on a custom dataset
-v7_custom_path = "C:/Users/GG/Desktop/Code/ML/Models/v7t_p5hyps_aqua/yolov7.pt"  # Path to a YOLOv7 model trained on a custom dataset
-custom_yaml = "C:/Users/GG/Desktop/Code/ML/Datasets/AquaTrash-yolov5/data.yaml"  # Path to the custom dataset's data.yaml file
-src = "C:/Users/GG/PycharmProjects/testvid.mp4"
-min_conf = 0.5
-=======
-one = True
-model_type = "v5s"  # Select from: v5s, v5m, v5n, v7, v7t, v5_custom, v7_custom
-v5_custom_path = "C:/Users/GG/Desktop/Code/ML/Models/v5s_70/weights/best.pt"  # Path to a YOLOv5 model trained on a custom dataset
-v7_custom_path = ""  # Path to a YOLOv7 model trained on a custom dataset
-custom_yaml = ""  # Path to the custom dataset's data.yaml file
-
->>>>>>> 8dafaf59706717f66b90412367ada413ad4d7551
->>>>>>> 53748feee50e4894cc8321b306afeb93a350cc1e
 avg_fps = []
 
 
