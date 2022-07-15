@@ -12,7 +12,7 @@ v7_custom_path = "prebuilts/custom/v7t_p5hyps_aqua/V1-416-86%/yolov7.pt"  # Path
 custom_yaml = "prebuilts/custom/v7t_p5hyps_aqua/data.yaml"  # Path to the custom dataset's data.yaml file
 src = "Testing/testvid.mp4"
 min_conf = 0.5
-avg_fps = []
+avg_fps = []  # List for Calculating Average FPS at ending
 
 
 def infer(frame, model, debug=False):
