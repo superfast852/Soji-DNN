@@ -4,7 +4,7 @@
 # **YOLOv7 Garbage Detection Inference and Model by GG**
 ##### This Git repository is the main repo for Project Soji DNN/Ingenium 2023.
 
-In here, we make a model based on WongKinYiu's YOLOv7 ML Model, which makes a Bounding Box Prediction by only looking at the image *once*, where the name "You Only Look Once" came from.
+In here, we make a model based on WongKinYiu's YOLOv7 ML Model, which makes a Bounding Box Prediction by only looking at the image *once*, hence the name "You Only Look Once".
 
 The purpose of this project is to Create an adequate model that can detect pieces of garbage based on an image, which will later be adapted into the project. The enviroment for the project will be a blank, preferrably metal/aluminum table, which will allow a clear background for the arm to detect trash.
 Currently, we have:
