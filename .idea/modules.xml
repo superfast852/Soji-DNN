@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Soji-DNN.iml" filepath="$PROJECT_DIR$/.idea/Soji-DNN.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ocv_cam_infer.iml" filepath="$PROJECT_DIR$/.idea/ocv_cam_infer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../openvino_ncs2_usage/.idea/openvino_ncs2_usage.iml" filepath="$PROJECT_DIR$/../openvino_ncs2_usage/.idea/openvino_ncs2_usage.iml" />
+    </modules>
+  </component>
+</project>
