@@ -6,10 +6,10 @@ import random
 import socket
 
 # Parameter Wall TODO: Add argparse
-send_info = False
+send_info = True
 debug = True  # Enable Function Outputs
 one = False
-model_type = "v7t"   # Select from: v5s, v5m, v5n, v7, v7t, v5_custom, v7_custom
+model_type = "v5s"   # Select from: v5s, v5m, v5n, v7, v7t, v5_custom, v7_custom
 v5_custom_path = "C:/Users/GG/Desktop/Code/ML/Models/v5s_70/weights/best.pt"  # Path to a YOLOv5 model trained on a custom dataset
 v7_custom_path = "prebuilts/custom/v7t_aqua/V2-512-90%/yolov7.pt"  # Path to a YOLOv7 model trained on a custom dataset
 custom_yaml = "prebuilts/custom/v7t_aqua/data.yaml"  # Path to the custom dataset's data.yaml file
@@ -19,9 +19,9 @@ pixel_threshold = 25
 avg_fps = []  # List for Calculating Average FPS at ending
 #clr = lambda: (random.randint(0,255), random.randint(0,255), random.randint(0,255))
 clr = lambda: (0, 255, 0)
-record = False
-host = "192.168.43.56"
-port = 65432
+record = True
+host = "localhost"
+port = 50008
 
 
 def infer(frame, model, debug=False):
@@ -32,7 +32,7 @@ def infer(frame, model, debug=False):
     return dets
 
 
-def draw(dets, frame, classes, debug=True, color=(0,255,0)):
+def draw(dets, frame, classes, debug=True, color=(0, 255, 0)):
     xy1 = (int(dets[0]), int(dets[1]))  # top left point
     xy2 = (int(dets[2]), int(dets[3]))  # bottom right point
     conf, lbl = dets[4:]  # confidence and output label
@@ -46,7 +46,7 @@ def draw(dets, frame, classes, debug=True, color=(0,255,0)):
         cv2.circle(frame, (int(cx), int(cy)), 5, color=color, thickness=-1)
 
 
-def draw_1(dets, frame, classes, debug=True, color=(0,255,0)):
+def draw_1(dets, frame, classes, debug=True, color=(0, 255, 0)):
     xy1 = (int(dets[0]), int(dets[1]))  # top left point
     xy2 = (int(dets[2]), int(dets[3]))  # bottom right point
     conf, lbl = dets[4:]  # confidence and output label
@@ -60,7 +60,7 @@ def draw_1(dets, frame, classes, debug=True, color=(0,255,0)):
         cv2.circle(frame, (int(cx), int(cy)), 5, color=color, thickness=-1)
 
 
-def pos_servo(dets, frame, socket_plug, px=25):
+def pos_servo(dets, frame, px=25):
     detX = (dets[2] + dets[0]) / 2  # Center of X
     detY = (dets[3] + dets[1]) / 2  # Center of Y
     ccy, ccx = [x/2 for x in frame.shape[:2]]
@@ -72,9 +72,7 @@ def pos_servo(dets, frame, socket_plug, px=25):
     if ccy<detY-px: yServ = '-'
     elif ccy>detY+px: yServ = '+'
     else: yServ = "="
-
-    socket_plug.sendall(xServ + " " + yServ)
-
+    return xServ + " " + yServ
 
 def frame_debug(frame, px=25):
     cy, cx = frame.shape[:2]
@@ -126,11 +124,6 @@ if __name__ == "__main__":
         if record:
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
             out = cv2.VideoWriter('Soji-DNN-Out.avi', fourcc, 80.0, (int(vid.get(cv2.CAP_PROP_FRAME_WIDTH)), int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT))))
-        if send_info:
-            print(f"Connecting to {host}:{port}...")
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((host, port))
-            print("Connection Success!")
         while vid.isOpened():
             start_time = time.time()
             ret, frame = vid.read()  # read webcam image info
@@ -146,7 +139,8 @@ if __name__ == "__main__":
 
             if confs:
                 most_conf_det = confs.index(max(confs))
-                if send_info: pos_servo(detections[most_conf_det])
+                if send_info:
+                    pos_servo(detections[most_conf_det], frame)
                 if one: draw_1(detections[most_conf_det], frame, classes, debug=debug, color=clr())
 
                 if debug:
