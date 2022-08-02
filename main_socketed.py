@@ -9,18 +9,18 @@ import socket
 send_info = True
 debug = True  # Enable Function Outputs
 one = False
-model_type = "v5s"   # Select from: v5s, v5m, v5n, v7, v7t, v5_custom, v7_custom
+model_type = "v7t"   # Select from: v5s, v5m, v5n, v7, v7t, v5_custom, v7_custom
 v5_custom_path = "C:/Users/GG/Desktop/Code/ML/Models/v5s_70/weights/best.pt"  # Path to a YOLOv5 model trained on a custom dataset
 v7_custom_path = "prebuilts/custom/v7t_aqua/V2-512-90%/yolov7.pt"  # Path to a YOLOv7 model trained on a custom dataset
 custom_yaml = "prebuilts/custom/v7t_aqua/data.yaml"  # Path to the custom dataset's data.yaml file
 src = 0  # "Testing/testvid.mp4" or HTTP address
-min_conf = 0.01
+min_conf = 0.5
 pixel_threshold = 25
 avg_fps = []  # List for Calculating Average FPS at ending
 #clr = lambda: (random.randint(0,255), random.randint(0,255), random.randint(0,255))
 clr = lambda: (0, 255, 0)
 record = True
-host = "192.168.197.100"
+host = "localhost"  # "4.tcp.ngrok.io" to use with ngrok
 port = 8220
 
 
@@ -74,9 +74,8 @@ def pos_servo(dets, frame, client, px=25):
     else: yServ = "="
     msg = xServ + " " + yServ
     client.send(msg.encode("utf-8"))
-    while client.recv(2048) != b"ack":
-        print("waiting for ack")
-    print("ack received!")
+    if client.recv(2048) == b"ack":
+        print("ack received!")
 
 def frame_debug(frame, px=25):
     cy, cx = frame.shape[:2]
@@ -125,6 +124,7 @@ if __name__ == "__main__":
 
         # Open Webcam
         vid = cv2.VideoCapture(src)
+        print(f"Connecting to {host}: {port}")
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect((host, port))
         if record:
