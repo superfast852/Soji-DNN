@@ -1,28 +1,24 @@
 import torch  # For Model
 import cv2  # For Cam
 import time  # Inference measuring
-import local_utils.Label_xtr as Label_xtr  # Custom Label Extractor TODO: Develop Extractor functions
+from local_utils import Label_xtr  # Custom Label Extractor TODO: Develop Extractor functions
 import random
-import socket
 
 # Parameter Wall TODO: Add argparse
-send_info = True
+send_info = False  # Activate Servo Positioning Function
 debug = True  # Enable Function Outputs
-one = False
-model_type = "v5s"   # Select from: v5s, v5m, v5n, v7, v7t, v5_custom, v7_custom
+one = False  # Only Draw a single square
+model_type = "v7t"   # Select from: v5s, v5m, v5n, v7, v7t, v5_custom, v7_custom
 v5_custom_path = "C:/Users/GG/Desktop/Code/ML/Models/v5s_70/weights/best.pt"  # Path to a YOLOv5 model trained on a custom dataset
 v7_custom_path = "prebuilts/custom/v7t_aqua/V2-512-90%/yolov7.pt"  # Path to a YOLOv7 model trained on a custom dataset
 custom_yaml = "prebuilts/custom/v7t_aqua/data.yaml"  # Path to the custom dataset's data.yaml file
-src = 0  # "Testing/testvid.mp4" or HTTP address
-min_conf = 0.01
-pixel_threshold = 25
+src = 0 #"Testing/testvid.mp4" # 0, 1 or HTTP address
+min_conf = 0.3  # Secondary layer for minimum detection (min_conf > 0.2 to take effect)
+pixel_threshold = 25  # Space in Pixels of inaccuracy tolerance for centering algo
 avg_fps = []  # List for Calculating Average FPS at ending
 #clr = lambda: (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-clr = lambda: (0, 255, 0)
-record = True
-host = "localhost"
-port = 50008
-
+clr = lambda: (0, 0, 0)  # Color function. Can replace with commented function for RGB :)
+record = False  # Record video feed into .avi file
 
 def infer(frame, model, debug=False):
     results = model(frame)  # infer
@@ -64,7 +60,7 @@ def pos_servo(dets, frame, px=25):
     detX = (dets[2] + dets[0]) / 2  # Center of X
     detY = (dets[3] + dets[1]) / 2  # Center of Y
     ccy, ccx = [x/2 for x in frame.shape[:2]]
-
+    # Adjust servos according to calculated deviation vector
     if ccx<detX-px: xServ = '-'
     elif ccx>detX+px: xServ = '+'
     else: xServ = "="
@@ -75,9 +71,10 @@ def pos_servo(dets, frame, px=25):
     return xServ + " " + yServ
 
 def frame_debug(frame, px=25):
-    cy, cx = frame.shape[:2]
-    ccx = int(cx/2)
-    ccy = int(cy/2)
+    cy, cx = frame.shape[:2]  # Get current feed res
+    ccx = int(cx/2)  # calculate X center
+    ccy = int(cy/2)  # calculate Y center
+    # Draw crosshair, basically
     cv2.rectangle(frame, (ccx-px, ccy-px), (ccx+px, ccy+px), (255, 0, 0), 2, cv2.LINE_AA)
 
     cv2.line(frame, (0, ccy), (ccx-px, ccy), (0, 0, 255), 2, cv2.LINE_AA)  # left line
@@ -87,6 +84,7 @@ def frame_debug(frame, px=25):
 
 
 if __name__ == "__main__":
+    # Model Loader
     try:
         if model_type == 'v5m':
             model = torch.hub.load("ultralytics/yolov5", 'custom', "prebuilts/yolov5m.pt", verbose=debug)
@@ -124,39 +122,38 @@ if __name__ == "__main__":
         if record:
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
             out = cv2.VideoWriter('Soji-DNN-Out.avi', fourcc, 80.0, (int(vid.get(cv2.CAP_PROP_FRAME_WIDTH)), int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT))))
-        while vid.isOpened():
-            start_time = time.time()
+        while True:  # Start processing of SINGLE FRAME
+            start_time = time.time()  # record time of initiation for FPS Calculation
             ret, frame = vid.read()  # read webcam image info
             detections = infer(frame, model, debug=debug)  # goto infer function atop
 
-            confs = []
-            for i in range(len(detections)):
-                # Show Webcam Image with Detection Info
+            confs = []  # Clear Confidence list
+            for i in range(len(detections)):  # for every detection in the image...
                 if not one:
-                    if detections[i][4] >= min_conf:
-                        draw(detections[i], frame, classes, debug=debug, color=clr())
-                confs.append(detections[i][4])
+                    if detections[i][4] >= min_conf:  # If the detection on for loop is higher than min_conf...
+                        draw(detections[i], frame, classes, debug=debug, color=clr())  # Draw the square around
+                confs.append(detections[i][4])  # Add detection to confidence list
 
             if confs:
-                most_conf_det = confs.index(max(confs))
+                most_conf_det = confs.index(max(confs))  #Extract which detection was the most confident
                 if send_info:
-                    pos_servo(detections[most_conf_det], frame)
-                if one: draw_1(detections[most_conf_det], frame, classes, debug=debug, color=clr())
+                    pos_servo(detections[most_conf_det], frame)  # If send_info is active, run servo position subroutine
+                if one: draw_1(detections[most_conf_det], frame, classes, debug=debug, color=clr())  # Draw the most confident detection
 
                 if debug:
-                    frame_debug(frame, pixel_threshold)
-                    if detections[0]: print(f"{detections[most_conf_det][4]:.3f}: {classes[int(detections[most_conf_det][5])]}")
+                    frame_debug(frame, pixel_threshold)  # Check function for more info
+                    if detections[0]: print(f"{detections[most_conf_det][4]:.3f}: {classes[int(detections[most_conf_det][5])]}")  # Print detection and confidence
 
-            cv2.imshow("Model Modified Output", frame)
-            if record: out.write(frame)
+            cv2.imshow("Model Modified Output", frame)  # Show Model Modified Video Feed
+            if record: out.write(frame)  # Record processed frame.
             # FrameRate calculations
             if debug:
-                fps = 1 / (time.time() - start_time)
-                avg_fps.append(fps)
-                print(f"FPS: {fps:.3f}\n")
-            if cv2.waitKey(1) & 0xFF == ord('q'): 1/0  # stop process if q is pressed
+                fps = 1 / (time.time() - start_time)  # Record current time and calculate FPS
+                avg_fps.append(fps)  # Add fps to list to calculate Average FPS of complete Runtime
+                print(f"FPS: {fps:.3f}\n")  # Print FPS
+            if cv2.waitKey(1) & 0xFF == ord('q'): 1/0  # stop process if q is pressed by pretty much crashing the code to run cleaner code
     except:
         print(f"\nAverage FrameRate: {sum(avg_fps)/len(avg_fps):.3f}")
-        vid.release()
-        if record: out.release()
-        cv2.destroyAllWindows()
+        vid.release()  # Shut Down video feed
+        if record: out.release()  # Close and save recorded video
+        cv2.destroyAllWindows()  # Close the window opened by OpenCV

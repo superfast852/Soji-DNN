@@ -1,11 +1,11 @@
 def getLabelsFromTxt(path="coco-lbl.txt", verbose=True):
-    with open(path, "r") as lbls:
-        a = lbls.read()
-        b = a.split('\n')
-        if verbose: print("Labels Extracted: ", b)
+    with open(path, "r") as lbls:  # Open txt file
+        a = lbls.read()  # Read txt file
+        b = a.split('\n')  # Split by every line into list
+        if verbose: print("Labels Extracted: ", b)  # print extracted list
         return b
 
-def getLabelsFromYaml(path="data.yaml", verbose=True):
+def getLabelsFromYaml(path="data.yaml", verbose=True):  # generally the same but with a yaml file
     import yaml
     with open(path, 'r') as file:
         a = yaml.full_load(file)["names"]

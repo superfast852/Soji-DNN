@@ -6,9 +6,6 @@ import random
 import socket
 
 # Parameter Wall TODO: Add argparse
-send_info = True
-debug = True  # Enable Function Outputs
-one = False
 model_type = "v7t"   # Select from: v5s, v5m, v5n, v7, v7t, v5_custom, v7_custom
 v5_custom_path = "C:/Users/GG/Desktop/Code/ML/Models/v5s_70/weights/best.pt"  # Path to a YOLOv5 model trained on a custom dataset
 v7_custom_path = "prebuilts/custom/v7t_aqua/V2-512-90%/yolov7.pt"  # Path to a YOLOv7 model trained on a custom dataset
@@ -16,12 +13,14 @@ custom_yaml = "prebuilts/custom/v7t_aqua/data.yaml"  # Path to the custom datase
 src = 0  # "Testing/testvid.mp4" or HTTP address
 min_conf = 0.5
 pixel_threshold = 25
-avg_fps = []  # List for Calculating Average FPS at ending
-#clr = lambda: (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-clr = lambda: (0, 255, 0)
-record = True
+clr = lambda: (0, 255, 0)  # (random.randint(0,255), random.randint(0,255), random.randint(0,255))
 host = "localhost"  # "4.tcp.ngrok.io" to use with ngrok
-port = 8220
+port = 9160  # will be using 9160 for commercial use
+avg_fps = []  # List for Calculating Average FPS at ending
+send_info = True
+debug = False  # Enable Function Outputs
+one = True
+record = False
 
 
 def infer(frame, model, debug=False):
@@ -75,7 +74,7 @@ def pos_servo(dets, frame, client, px=25):
     msg = xServ + " " + yServ
     client.send(msg.encode("utf-8"))
     if client.recv(2048) == b"ack":
-        print("ack received!")
+        if send_info: print("ack received!")
 
 def frame_debug(frame, px=25):
     cy, cx = frame.shape[:2]
@@ -124,16 +123,20 @@ if __name__ == "__main__":
 
         # Open Webcam
         vid = cv2.VideoCapture(src)
-        print(f"Connecting to {host}: {port}")
-        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client_socket.connect((host, port))
         if record:
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
             out = cv2.VideoWriter('Soji-DNN-Out.avi', fourcc, 80.0, (int(vid.get(cv2.CAP_PROP_FRAME_WIDTH)), int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+
+        if send_info:
+            print(f"Connecting to {host}: {port}")
+            client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client_socket.connect((host, port))
+
         while vid.isOpened():
             start_time = time.time()
             ret, frame = vid.read()  # read webcam image info
             detections = infer(frame, model, debug=debug)  # goto infer function atop
+
 
             confs = []
             for i in range(len(detections)):
@@ -165,6 +168,7 @@ if __name__ == "__main__":
                 avg_fps.append(fps)
                 print(f"FPS: {fps:.3f}\n")
             if cv2.waitKey(1) & 0xFF == ord('q'): 1/0  # stop process if q is pressed
+
     except:
         print(f"\nAverage FrameRate: {sum(avg_fps)/len(avg_fps):.3f}")
         vid.release()

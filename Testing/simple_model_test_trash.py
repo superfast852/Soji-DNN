@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 53748feee50e4894cc8321b306afeb93a350cc1e
 import cv2
 import torch
 import time

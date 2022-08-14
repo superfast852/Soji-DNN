@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Soji-DNN.iml" filepath="$PROJECT_DIR$/.idea/Soji-DNN.iml" />
+      <module fileurl="file://$USER_HOME$/AppData/Local/Programs/Webots/projects/robots/niryo/ned/controllers/.idea/controllers.iml" filepath="$USER_HOME$/AppData/Local/Programs/Webots/projects/robots/niryo/ned/controllers/.idea/controllers.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/ocv_cam_infer.iml" filepath="$PROJECT_DIR$/.idea/ocv_cam_infer.iml" />
       <module fileurl="file://$PROJECT_DIR$/../openvino_ncs2_usage/.idea/openvino_ncs2_usage.iml" filepath="$PROJECT_DIR$/../openvino_ncs2_usage/.idea/openvino_ncs2_usage.iml" />
     </modules>

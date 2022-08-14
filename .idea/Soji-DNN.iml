@@ -6,5 +6,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="openvino_ncs2_usage" />
     <orderEntry type="module" module-name="ocv_cam_infer" />
+    <orderEntry type="module" module-name="controllers" />
   </component>
 </module>
