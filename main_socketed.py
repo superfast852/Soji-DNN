@@ -106,7 +106,7 @@ if __name__ == "__main__":
             model = torch.hub.load('yolov7', 'custom', "prebuilts/yolov7.pt", source='local', verbose=debug)  # YoloV7 Tiny Model
 
         elif model_type == 'v7t':
-            model = torch.hub.load('yolov7', 'custom', "prebuilts/yolov7t.pt", source='local', verbose=debug)  # YoloV7 Tiny Model
+            model = torch.hub.load('yolov7', 'custom', "prebuilts/yolov7-tiny.pt", source='local', verbose=debug)  # YoloV7 Tiny Model
 
         elif model_type == "v7_custom":
             model = torch.hub.load('yolov7', 'custom', v7_custom_path, source='local', verbose=debug)  # YoloV7 Tiny Model
@@ -131,6 +131,7 @@ if __name__ == "__main__":
             print(f"Connecting to {host}: {port}")
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             client_socket.connect((host, port))
+            print("Connected!")
 
         while vid.isOpened():
             start_time = time.time()

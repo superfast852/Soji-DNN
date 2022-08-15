@@ -8,7 +8,7 @@ import random
 send_info = False  # Activate Servo Positioning Function
 debug = True  # Enable Function Outputs
 one = False  # Only Draw a single square
-model_type = "v7t"   # Select from: v5s, v5m, v5n, v7, v7t, v5_custom, v7_custom
+model_type = "v7-tiny"   # Select from: v5s, v5m, v5n, v7, v7t, v5_custom, v7_custom
 v5_custom_path = "C:/Users/GG/Desktop/Code/ML/Models/v5s_70/weights/best.pt"  # Path to a YOLOv5 model trained on a custom dataset
 v7_custom_path = "prebuilts/custom/v7t_aqua/V2-512-90%/yolov7.pt"  # Path to a YOLOv7 model trained on a custom dataset
 custom_yaml = "prebuilts/custom/v7t_aqua/data.yaml"  # Path to the custom dataset's data.yaml file
@@ -101,8 +101,8 @@ if __name__ == "__main__":
         elif model_type == 'v7':
             model = torch.hub.load('yolov7', 'custom', "prebuilts/yolov7.pt", source='local', verbose=debug)  # YoloV7 Tiny Model
 
-        elif model_type == 'v7t':
-            model = torch.hub.load('yolov7', 'custom', "prebuilts/yolov7t.pt", source='local', verbose=debug)  # YoloV7 Tiny Model
+        elif model_type == 'v7t' or model_type == 'v7-tiny':
+            model = torch.hub.load('yolov7', 'custom', "prebuilts/yolov7-tiny.pt", source='local', verbose=debug)  # YoloV7 Tiny Model
 
         elif model_type == "v7_custom":
             model = torch.hub.load('yolov7', 'custom', v7_custom_path, source='local', verbose=debug)  # YoloV7 Tiny Model
